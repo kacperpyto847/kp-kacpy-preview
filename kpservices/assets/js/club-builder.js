@@ -5,12 +5,13 @@
   if (!root || !output) return;
   const counter = document.getElementById('selected-count');
   const catalogue = [
-    {id:'operations',title:'Sport & Event Operations',short:'Mecze i formalności',desc:'Matchday, dokumentacja, bezpieczeństwo, audyty.',problems:['nieprzejrzyste zadania przed meczem','braki w przygotowaniu wydarzenia lub do wymogów ligi'],deliver:['checklista organizacji wydarzenia','analiza obowiązków i dokumentów']},
-    {id:'media',title:'Media & Creative',short:'Content i komunikacja',desc:'Foto, wideo, grafiki, kalendarz treści, sponsorzy.',problems:['nieregularna komunikacja z kibicami i rodzicami','brak powtarzalnych materiałów i szablonów'],deliver:['plan komunikacji i formatów','pakiet szablonów lub zakres produkcji materiałów']},
+    {id:'operations',title:'Sport & Event Operations',short:'Mecze i formalności',desc:'Bezpieczeństwo, służby, procesy licencyjne, dokumentacja i wydarzenia.',problems:['nieprzejrzyste zadania przed meczem','braki w przygotowaniu wydarzenia lub do wymogów ligi'],deliver:['checklista organizacji wydarzenia','analiza obowiązków i dokumentów']},
+    {id:'media',title:'Media & Communication',short:'Content i komunikacja',desc:'Foto, wideo, grafiki, kalendarz treści, sponsorzy.',problems:['nieregularna komunikacja z kibicami i rodzicami','brak powtarzalnych materiałów i szablonów'],deliver:['plan komunikacji i formatów','pakiet szablonów lub zakres produkcji materiałów']},
     {id:'management',title:'Project & Management',short:'Zarządzanie i procesy',desc:'Projekty, ludzie, budżety, role i narzędzia.',problems:['zadania i decyzje bez właścicieli','brak planu, budżetu i miejsca do śledzenia postępów'],deliver:['mapa odpowiedzialności i priorytetów','prosta tablica zadań, harmonogram i sposób raportowania']},
-    {id:'it',title:'IT & Networks',short:'Sieci i technologia',desc:'Sieć, infrastruktura, dostęp i bezpieczeństwo urządzeń.',problems:['niestabilna lub źle skonfigurowana sieć','brak uporządkowanych dostępów i urządzeń'],deliver:['przegląd infrastruktury i najważniejszych ryzyk','plan konfiguracji lub modernizacji']},
+    {id:'it',title:'IT & Networks',short:'Sieci i technologia',desc:'Audyty IT, sieć, infrastruktura, dostępy i wsparcie techniczne.',problems:['niestabilna lub źle skonfigurowana sieć','brak uporządkowanych dostępów i urządzeń'],deliver:['przegląd infrastruktury i najważniejszych ryzyk','plan konfiguracji lub modernizacji']},
     {id:'web',title:'Web & Digital',short:'Strona i obecność online',desc:'WordPress, domena, hosting, aktualizacje i formularze.',problems:['nieaktualna strona i rozproszone informacje','utrudniony kontakt z klubem i zapisy'],deliver:['uproszczona struktura strony i treści','plan utrzymania strony i dostępów']},
-  ];  const combos = {
+  ];
+  const combos = {
     'it+web': ['Stabilna obecność online','Łączymy niezawodny dostęp i konfigurację usług z utrzymaniem witryny, poczty oraz domen.'],
     'it+media': ['Media bez technicznych przeszkód','Przygotowujemy infrastrukturę do szybkiego przesyłania materiałów i pracę nad publikacją zdjęć oraz wideo.'],
     'it+operations': ['Technicznie przygotowany dzień meczu','Weryfikujemy łączność, dostęp i kluczowe urządzenia razem z procedurami działania w dniu wydarzenia.'],
@@ -31,7 +32,7 @@
   ];
   const challenges = {
     awans:{ids:['management','operations','it'],label:'Awans i nowe wymagania',reason:'W pierwszej kolejności analizujemy wymagania rozgrywek, odpowiedzialności, obiekt i harmonogram. Dokładne obowiązki zależą od poziomu ligi.'},
-    brakczas:{ids:['management','media'],label:'Brakuje ludzi i czasu',reason:'Szukamy zadań do uproszczenia, odpowiedzialnych osób i możliwej do utrzymania komunikacji. Rozważamy także rekrutację wolontariuszy.'},
+    brakczas:{ids:['management','media'],label:'Brakuje ludzi i czasu',reason:'Szukamy zadań do uproszczenia, odpowiedzialnych osób i możliwej do utrzymania komunikacji. Można też uporządkować rekrutację i wdrażanie nowych współpracowników.'},
     komunikacja:{ids:['media','web','management'],label:'Nie działa komunikacja',reason:'Diagnozujemy kanały, role, jakość materiałów, spójność komunikatów i drogę kibica od social mediów do strony.'},
     wydarzenie:{ids:['operations','media','it'],label:'Organizujemy wydarzenie',reason:'Łączymy operacje, obsługę medialną i zaplecze techniczne, tak aby mieć jedną listę kontrolną i plan awaryjny.'},
     infrastruktura:{ids:['it','web','management'],label:'Problemy z technologią',reason:'Sprawdzamy sieć, usługi internetowe, dostęp do narzędzi, dokumentację oraz sposób utrzymania.'},
@@ -45,7 +46,7 @@
     wizerunek:['web','media','management'],
     full:['it','web','media','operations','management']
   };
-  let selected = new Set(['management','media']);
+  let selected = new Set();
   const rawParams = new URLSearchParams(location.search);
   const incomingIds = (rawParams.get('obszary')||'').split(',').map(s=>s.trim().toLowerCase());
   const idAliases = {creative:'media',kacpy:'media',sport:'operations',project:'management'};
@@ -63,7 +64,7 @@
       const check=elt('span','builder-check',selected.has(item.id)?'✓':'+');check.setAttribute('aria-hidden','true');
       const copy=elt('span','builder-option-copy');copy.append(elt('b','',item.title),elt('small','',item.desc));
       button.append(check,copy,elt('span','builder-number',String(i+1).padStart(2,'0')));
-      button.addEventListener('click',()=> { selected.has(item.id)?selected.delete(item.id):selected.add(item.id);render(); });
+      button.addEventListener('click',()=> { selected.has(item.id)?selected.delete(item.id):selected.add(item.id);activeChallenge=null;render(); });
       root.append(button);
     });
   }
@@ -71,30 +72,64 @@
   function addParagraph(parent,text,cls=''){parent.append(elt('p',cls,text));}
   function keys(){return catalogue.filter(o=>selected.has(o.id)).map(o=>o.id);}
   function renderResult(){
-    output.replaceChildren();const ids=keys();const n=ids.length;counter.textContent=n+' / 5';
-    if(!n){output.append(elt('div','builder-output-empty','Wybierz przynajmniej jeden obszar, aby zobaczyć propozycję.'));return;}
-    output.append(elt('div','builder-counter','TWÓJ ZESTAW / '+n+' Z 5'));
-    if(activeChallenge && challenges[activeChallenge]) {const note=elt('div','builder-reason'); note.textContent=challenges[activeChallenge].label+' — '+challenges[activeChallenge].reason; output.append(note);}
-    output.append(elt('h3','',n===5?'Kompleksowy plan dla klubu.':n===1?'Zacznijmy od jednego problemu.':n===2?'Dwa obszary. Wspólny efekt.':'Kilka kompetencji. Jeden projekt.'));
-    addParagraph(output,n===5?'Kompletna diagnoza organizacji i infrastruktury, a następnie etapowe wdrożenie. Nie oznacza to automatycznie zakupu wszystkich możliwych usług.':'Wynik pokazuje typowe punkty wspólne wybranych kompetencji oraz przykładowe efekty. Zakres ustalamy dopiero po rozmowie.','summary');
-    const tags=elt('div','builder-tags');catalogue.filter(o=>selected.has(o.id)).forEach(o=>tags.append(elt('span','',o.short)));output.append(tags);
+    output.replaceChildren();
+    const ids=keys(),n=ids.length;
+    counter.textContent=n+' / 5';
+    if(!n){
+      const empty=elt('div','builder-empty-visual');
+      empty.append(elt('span','empty-glyph','✳'));
+      empty.append(elt('span','empty-count','0 / 5 WYBRANYCH OBSZARÓW'));
+      empty.append(elt('h3','','Co chcesz usprawnić?'));
+      empty.append(elt('p','','Zaznacz przynajmniej jedną specjalizację albo wybierz problem powyżej. W tym miejscu pojawi się propozycja współpracy.'));
+      output.append(empty);
+      return;
+    }
+    const head=elt('div','builder-result-header');
+    head.append(elt('span','builder-counter','TWÓJ ZESTAW / '+n+' Z 5'));
+    head.append(elt('h3','',n===5?'Kompleksowy zakres współpracy':n===1?'Zacznijmy od konkretnego obszaru':n===2?'Dwie kompetencje, jeden plan':'Połączone kompetencje, spójne działania'));
+    addParagraph(head,'Tak mogą uzupełniać się wybrane usługi. To propozycja kierunków rozmowy, nie automatyczna oferta.');
+    output.append(head);
+    if(activeChallenge && challenges[activeChallenge]){
+      const note=elt('div','builder-reason');
+      note.textContent='Wybrany problem: '+challenges[activeChallenge].label+'. '+challenges[activeChallenge].reason;
+      output.append(note);
+    }
+    const tags=elt('div','builder-tags');
+    catalogue.filter(o=>selected.has(o.id)).forEach(o=>tags.append(elt('span','',o.title)));
+    output.append(tags);
     const relevantTriples=triples.filter(t=>t.ids.every(x=>selected.has(x))).slice(0,2);
-    const pairs=[]; for(let i=0;i<ids.length;i++)for(let j=i+1;j<ids.length;j++){const k=ids[i]+'+'+ids[j];if(combos[k])pairs.push({k,description:combos[k]});}
-    if(relevantTriples.length || pairs.length){addHeading(output,'JAK TE OBSZARY SIĘ ŁĄCZĄ');
-      relevantTriples.forEach(t=>{const el=elt('div','builder-rel');el.append(elt('strong','',t.title));addParagraph(el,t.body);output.append(el);});
-      pairs.slice(0,relevantTriples.length?2:3).forEach(item=>{const el=elt('div','builder-rel');el.append(elt('strong','',item.description[0]));addParagraph(el,item.description[1]);output.append(el);});
+    const pairs=[];
+    for(let i=0;i<ids.length;i++) for(let j=i+1;j<ids.length;j++){
+      const v=combos[ids[i]+'+'+ids[j]] || combos[ids[j]+'+'+ids[i]];
+      if(v) pairs.push({description:v});
     }
-    addHeading(output,'PROBLEMY DO SPRAWDZENIA PODCZAS DIAGNOZY');
-    const issueList=elt('ul','builder-problems');catalogue.filter(o=>selected.has(o.id)).flatMap(o=>o.problems).slice(0,6).forEach(x=>issueList.append(elt('li','',x)));output.append(issueList);
-    addHeading(output,'PRZYKŁADOWE REZULTATY');const delivers=elt('ul','');catalogue.filter(o=>selected.has(o.id)).flatMap(o=>o.deliver).slice(0,6).forEach(x=>delivers.append(elt('li','',x)));output.append(delivers);
-    const message=(activeChallenge?'Problem: '+challenges[activeChallenge].label+'. ':'')+'Interesuje mnie połączenie usług: '+catalogue.filter(o=>selected.has(o.id)).map(o=>o.title).join(', ')+'. Chciałbym omówić możliwości i koszty. ('+n+'/5 obszarów)';
+    if(relevantTriples.length || pairs.length){
+      addHeading(output,'01 / GDZIE USŁUGI SIĘ ŁĄCZĄ');
+      relevantTriples.forEach(t=>{
+        const el=elt('div','builder-rel');el.append(elt('strong','',t.title));addParagraph(el,t.body);output.append(el);
+      });
+      pairs.slice(0,relevantTriples.length?2:3).forEach(item=>{
+        const el=elt('div','builder-rel');el.append(elt('strong','',item.description[0]));addParagraph(el,item.description[1]);output.append(el);
+      });
+    }
+    const problemBlock=elt('div','builder-list-block');
+    addHeading(problemBlock,'02 / CO WARTO SPRAWDZIĆ');
+    const issueList=elt('ul','');
+    catalogue.filter(o=>selected.has(o.id)).flatMap(o=>o.problems).slice(0,5).forEach(x=>issueList.append(elt('li','',x)));
+    problemBlock.append(issueList);output.append(problemBlock);
+    const deliverBlock=elt('div','builder-list-block');
+    addHeading(deliverBlock,'03 / CO MOŻEMY PRZYGOTOWAĆ');
+    const delivers=elt('ul','');
+    catalogue.filter(o=>selected.has(o.id)).flatMap(o=>o.deliver).slice(0,5).forEach(x=>delivers.append(elt('li','',x)));
+    deliverBlock.append(delivers);output.append(deliverBlock);
     if(selected.has('media')){
-      const studio=elt('aside','builder-kacpy');studio.append(elt('strong','','KACPY Creative Studio'));
-      addParagraph(studio,'Fotografia, wideo, design i komunikacja. Ten element może być częścią kompleksowej realizacji KP Services. Portfolio obejrzysz osobno, bez utraty wyboru.');
-      const a=elt('a','','ZOBACZ REALIZACJE KACPY ↗');a.href=window.KPBrandURL?window.KPBrandURL('kacpy','fotografia.html'):'../kacpy/fotografia.html';a.target='_blank';a.rel='noopener noreferrer';studio.append(a);output.append(studio);
+      const studio=elt('aside','builder-kacpy');studio.append(elt('strong','','Część kreatywna — KACPY'));
+      addParagraph(studio,'Fotografia, wideo, design i komunikacja są częścią naszego wspólnego zakresu. Możesz poznać studio, nie tracąc konfiguracji.');
+      const a=elt('a','','ODKRYJ KACPY ↗');a.href=window.KPBrandURL?window.KPBrandURL('kacpy','index.html'):'../kacpy/index.html';a.target='_blank';a.rel='noopener noreferrer';studio.append(a);output.append(studio);
     }
-    const link=elt('a','builder-offer' ,'POROZMAWIAJMY O TYM ZESTAWIE ↗');link.href='kontakt.html?type='+encodeURIComponent('Oferta łączona')+'&message='+encodeURIComponent(message);output.append(link);
-    addParagraph(output,'To demonstracyjna rekomendacja. Formalne obowiązki, licencje, bezpieczeństwo i dokumentację weryfikujemy względem aktualnych zasad danego wydarzenia lub rozgrywek.','builder-disclaimer');
+    const message=(activeChallenge?'Problem: '+challenges[activeChallenge].label+'. ':'')+'Interesuje mnie połączenie usług: '+catalogue.filter(o=>selected.has(o.id)).map(o=>o.title).join(', ')+'. Chciałbym omówić możliwości i koszty. ('+n+'/5 obszarów)';
+    const link=elt('a','builder-offer','OMÓWMY TEN ZAKRES ↗');link.href='kontakt.html?type='+encodeURIComponent('Oferta łączona')+'&message='+encodeURIComponent(message);output.append(link);
+    addParagraph(output,'Wymogi licencyjne, bezpieczeństwa i formalne obowiązki weryfikujemy względem właściwych zasad.','builder-disclaimer');
   }
   function render(){renderOptions();renderChallenges();renderResult();}
   function renderChallenges(){

@@ -24,9 +24,10 @@
  const form=document.querySelector('#kacpy-contact');
  form?.addEventListener('submit',e=>{e.preventDefault();if(!form.checkValidity()){form.reportValidity();return;}
  const name=form.querySelector('[name=name]').value.trim();const email=form.querySelector('[name=email]').value.trim();const service=form.querySelector('[name=service]').value;const msg=form.querySelector('[name=message]').value.trim();
- const subject='[KACPY] Zapytanie — '+service;const body='Dzień dobry,\n\n'+msg+'\n\n--\n'+name+'\n'+email+'\nUsługa: '+service;
- document.querySelector('#mail-status').textContent='Wersja demonstracyjna: formularz nie wysyła wiadomości. Wdrożymy go przed publikacją.';
- console.info('Podgląd zapytania:', {subject,body});
+ const draft='[KACPY] '+service+'\n\n'+msg+'\n\n--\n'+name+'\n'+email;
+ const status=document.querySelector('#mail-status');
+ if(navigator.clipboard?.writeText){navigator.clipboard.writeText(draft).then(()=>{status.textContent='Wersja demonstracyjna: treść zapytania skopiowano. Nic nie zostało wysłane.';}).catch(()=>{status.textContent='Wersja demonstracyjna: wiadomość nie została wysłana.';});}
+ else if(status) status.textContent='Wersja demonstracyjna: wiadomość nie została wysłana.';
  });
  document.querySelectorAll('[data-year]').forEach(x=>x.textContent=new Date().getFullYear());
 })();

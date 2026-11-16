@@ -61,9 +61,11 @@
     const service = form.querySelector('#client-type').value;
     const message = form.querySelector('#client-message').value.trim();
     if (message.length < 12) { if (feedback) feedback.textContent = 'Opis projektu powinien mieć co najmniej 12 znaków.'; return; }
-    const subject = `[KP — zapytanie] ${service}`;
-    const body = `Dzień dobry,\n\n${message}\n\n--\n${name}\n${email}\nZakres: ${service}`;
-    if (feedback) feedback.textContent = 'Wersja demonstracyjna: nie wysyłamy wiadomości. Formularz produkcyjny uruchomimy po wdrożeniu.';
-    console.info('Podgląd zapytania:', {subject, body});
+    const draft = `[KP Services — ${service}]\n\n${message}\n\n--\n${name}\n${email}`;
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(draft).then(() => {
+        if (feedback) feedback.textContent = 'Wersja demonstracyjna: treść zapytania skopiowana do schowka. Wiadomość nie została wysłana.';
+      }).catch(() => { if (feedback) feedback.textContent = 'Wersja demonstracyjna: wiadomość nie została wysłana. Skopiuj opis i prześlij go po uruchomieniu strony.'; });
+    } else if (feedback) feedback.textContent = 'Wersja demonstracyjna: wiadomość nie została wysłana. Po uruchomieniu strony dodamy wysyłkę.';
   });
 })();
