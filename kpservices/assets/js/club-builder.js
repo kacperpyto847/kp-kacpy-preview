@@ -5,13 +5,12 @@
   if (!root || !output) return;
   const counter = document.getElementById('selected-count');
   const catalogue = [
+    {id:'operations',title:'Sport & Event Operations',short:'Mecze i formalności',desc:'Matchday, dokumentacja, bezpieczeństwo, audyty.',problems:['nieprzejrzyste zadania przed meczem','braki w przygotowaniu wydarzenia lub do wymogów ligi'],deliver:['checklista organizacji wydarzenia','analiza obowiązków i dokumentów']},
+    {id:'media',title:'Media & Creative',short:'Content i komunikacja',desc:'Foto, wideo, grafiki, kalendarz treści, sponsorzy.',problems:['nieregularna komunikacja z kibicami i rodzicami','brak powtarzalnych materiałów i szablonów'],deliver:['plan komunikacji i formatów','pakiet szablonów lub zakres produkcji materiałów']},
+    {id:'management',title:'Project & Management',short:'Zarządzanie i procesy',desc:'Projekty, ludzie, budżety, role i narzędzia.',problems:['zadania i decyzje bez właścicieli','brak planu, budżetu i miejsca do śledzenia postępów'],deliver:['mapa odpowiedzialności i priorytetów','prosta tablica zadań, harmonogram i sposób raportowania']},
     {id:'it',title:'IT & Networks',short:'Sieci i technologia',desc:'Sieć, infrastruktura, dostęp i bezpieczeństwo urządzeń.',problems:['niestabilna lub źle skonfigurowana sieć','brak uporządkowanych dostępów i urządzeń'],deliver:['przegląd infrastruktury i najważniejszych ryzyk','plan konfiguracji lub modernizacji']},
     {id:'web',title:'Web & Digital',short:'Strona i obecność online',desc:'WordPress, domena, hosting, aktualizacje i formularze.',problems:['nieaktualna strona i rozproszone informacje','utrudniony kontakt z klubem i zapisy'],deliver:['uproszczona struktura strony i treści','plan utrzymania strony i dostępów']},
-    {id:'media',title:'Media & Creative',short:'Content i komunikacja',desc:'Foto, wideo, grafiki, kalendarz treści, sponsorzy.',problems:['nieregularna komunikacja z kibicami i rodzicami','brak powtarzalnych materiałów i szablonów'],deliver:['plan komunikacji i formatów','pakiet szablonów lub zakres produkcji materiałów']},
-    {id:'operations',title:'Sport & Event Operations',short:'Mecze i formalności',desc:'Matchday, dokumentacja, bezpieczeństwo, audyty.',problems:['nieprzejrzyste zadania przed meczem','braki w przygotowaniu wydarzenia lub do wymogów ligi'],deliver:['checklista organizacji wydarzenia','analiza obowiązków i dokumentów']},
-    {id:'management',title:'Project & Management',short:'Zarządzanie i procesy',desc:'Projekty, ludzie, budżety, role i narzędzia.',problems:['zadania i decyzje bez właścicieli','brak planu, budżetu i miejsca do śledzenia postępów'],deliver:['mapa odpowiedzialności i priorytetów','prosta tablica zadań, harmonogram i sposób raportowania']},
-  ];
-  const combos = {
+  ];  const combos = {
     'it+web': ['Stabilna obecność online','Łączymy niezawodny dostęp i konfigurację usług z utrzymaniem witryny, poczty oraz domen.'],
     'it+media': ['Media bez technicznych przeszkód','Przygotowujemy infrastrukturę do szybkiego przesyłania materiałów i pracę nad publikacją zdjęć oraz wideo.'],
     'it+operations': ['Technicznie przygotowany dzień meczu','Weryfikujemy łączność, dostęp i kluczowe urządzenia razem z procedurami działania w dniu wydarzenia.'],
