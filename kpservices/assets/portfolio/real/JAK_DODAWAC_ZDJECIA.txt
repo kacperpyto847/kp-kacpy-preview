@@ -1,0 +1,4 @@
+Tutaj wstaw własne zdjęcia po ich przygotowaniu do internetu.
+Zalecane: JPG lub WebP, dłuższy bok 1800–2400 px, sRGB, odpowiednia kompresja.
+W assets/js/portfolio.js zmień ścieżki w tablicy KP_PHOTO_ALBUMS.
+Przed publikacją potwierdź zgodę i prawo do wykorzystania zdjęć.
